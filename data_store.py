@@ -1,20 +1,13 @@
 import pandas as pd
-
-data = None
-
-def load_data(df):
-    global data
-    data = df
-
-def query_data(query):
-    global data
-    if data is None:
-        return "Сначала загрузите PDF файл."
-
-    query_lower = query.lower()
-
-    for _, row in data.iterrows():
-        if (query_lower in row["Номер отправления"]) or            (query_lower in row["Артикул"]) or            (query_lower in row["Этикетка"]) or            (query_lower in row["Товар"].lower()):
+user_data = {}
+def save_user_data(user_id, df): user_data[user_id] = df
+def query_user_data(user_id, query):
+    df = user_data.get(user_id)
+    if df is None:
+        return "⚠️ Сначала отправьте PDF-файл."
+    query = query.lower()
+    for _, row in df.iterrows():
+        if (query in row["Номер отправления"]) or            (query in row["Артикул"]) or            (query in row["Этикетка"]) or            (query in row["Товар"].lower()):
             return f"""📦 *Найдено совпадение:*
 *Товар:* {row['Товар']}
 *Номер отправления:* {row['Номер отправления']}
@@ -22,4 +15,4 @@ def query_data(query):
 *Этикетка:* {row['Этикетка']}
 *Кол-во:* {row['Кол-во']}
 """
-    return "Ничего не найдено по запросу."
+    return "❌ Ничего не найдено по запросу."
