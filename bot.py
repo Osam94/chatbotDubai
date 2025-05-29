@@ -35,12 +35,17 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 @app.route(WEBHOOK_PATH, methods=["POST"])
 def telegram_webhook():
-    update = Update.de_json(request.get_json(force=True), bot_app.bot)
-    loop = asyncio.get_event_loop()
-    if loop.is_running():
-        loop.create_task(bot_app.process_update(update))
-    else:
-        loop.run_until_complete(bot_app.process_update(update))
+    try:
+        update_json = request.get_json(force=True)
+        print(f"📩 Webhook received: {update_json}")  # Log input
+        update = Update.de_json(update_json, bot_app.bot)
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            loop.create_task(bot_app.process_update(update))
+        else:
+            loop.run_until_complete(bot_app.process_update(update))
+    except Exception as e:
+        print(f"❌ Error in webhook: {e}")
     return "OK"
 
 async def setup():
