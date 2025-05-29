@@ -1,11 +1,11 @@
-import os
 import logging
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 from pdf_parser import parse_pdf
 from data_store import load_data, query_data
 
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+# Hardcoded token (for Render environment without .env support)
+TOKEN = "7993767401:AAFeXQzNo74K2E5ZnkacbPJVLWKDNDMEjbU"
 
 logging.basicConfig(level=logging.INFO)
 
