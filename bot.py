@@ -1,5 +1,6 @@
 import os
 import logging
+import asyncio
 import pandas as pd
 from flask import Flask, request
 from telegram import Update, Bot
@@ -39,13 +40,15 @@ def telegram_webhook():
     bot_app.update_queue.put_nowait(update)
     return "OK"
 
+async def setup_webhook():
+    await bot_app.bot.delete_webhook()
+    await bot_app.bot.set_webhook(WEBHOOK_URL)
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     bot_app = ApplicationBuilder().token(TOKEN).concurrent_updates(True).build()
     bot_app.add_handler(CommandHandler("start", start))
     bot_app.add_handler(MessageHandler(filters.Document.PDF, handle_document))
     bot_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
-
-    bot_app.bot.delete_webhook()
-    bot_app.bot.set_webhook(WEBHOOK_URL)
+    asyncio.run(setup_webhook())
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
